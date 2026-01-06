@@ -7,19 +7,23 @@ export async function generateAIResponse(
   history: { role: 'user' | 'assistant', content: string }[],
   settings: UserSettings
 ) {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) throw new Error("API_KEY missing");
+  const apiKey = process?.env?.API_KEY;
+  if (!apiKey) {
+    throw new Error("API_KEY не обнаружен. Пожалуйста, проверьте настройки окружения.");
+  }
 
   const ai = new GoogleGenAI({ apiKey });
   
   const systemInstruction = `
-    Ты — AuraMind R1, высококвалифицированный ИИ-психолог. Твоя специализация — глубокий экзистенциальный и когнитивно-поведенческий анализ.
+    Ты — AuraMind R1, профессиональный ИИ-психолог. 
+    Твоя цель: глубокий аналитический и эмпатичный разбор ситуаций.
     
-    Твоя задача:
-    1. Использовать возможности глубокого рассуждения для поиска скрытых причин стресса или тревоги пользователя.
-    2. Сохранять эмпатичный, спокойный и поддерживающий тон.
-    3. Контекст пользователя: возраст ${settings.age}, стиль ${settings.style}.
-    4. Отвечай ВСЕГДА на русском языке.
+    Стиль общения:
+    1. Тон спокойный, вдумчивый, профессиональный.
+    2. Используй глубокое рассуждение (Deep Thinking) для анализа подтекста и эмоций.
+    3. Возраст пользователя: ${settings.age}.
+    4. Если активированы советы (${settings.advice}), предлагай конкретные шаги. Если нет — используй метод Сократа.
+    5. Ответ всегда на русском языке.
   `;
 
   const contents = [
@@ -36,22 +40,18 @@ export async function generateAIResponse(
       contents,
       config: {
         systemInstruction,
-        temperature: 0.7,
+        temperature: 0.65,
         thinkingConfig: {
           thinkingBudget: settings.deepAnalysis ? 32768 : 0
         }
       }
     });
 
-    // Extract text output
-    const text = response.text || "";
+    const text = response.text || "Извините, я не смог сформировать ответ.";
     
-    // In Gemini 3 Pro, 'thinking' isn't always returned as a separate field like in DeepSeek,
-    // but the model performs it internally when budget is allocated. 
-    // If the model provides thoughts in parts, we could extract them.
     return {
       content: text,
-      reasoning: "Анализ завершен. Модель применила глубокое рассуждение для формирования этого ответа."
+      reasoning: settings.deepAnalysis ? "Проведен глубокий психологический анализ когнитивных паттернов." : undefined
     };
   } catch (error: any) {
     console.error("Gemini API Error:", error);
