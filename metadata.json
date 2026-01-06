@@ -1,0 +1,7 @@
+{
+  "name": "AuraMind AI",
+  "description": "An ethereal AI psychologist assistant that helps you organize your thoughts and find mental balance using Gemini Pro.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
