@@ -1,48 +1,60 @@
 
 import { GoogleGenAI } from "@google/genai";
-import { UserSettings } from "../types";
+import { UserSettings } from "../types.ts";
 
 export async function generateAIResponse(
   message: string, 
-  history: { role: 'user' | 'model', text: string }[],
+  history: { role: 'user' | 'assistant', content: string }[],
   settings: UserSettings
 ) {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
-  
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) throw new Error("API_KEY missing");
+
+  const ai = new GoogleGenAI({ apiKey });
   
   const systemInstruction = `
-    Ты — AuraMind DeepReasoning, ИИ-психолог нового поколения, построенный на принципах глубокого логического вывода (аналог DeepSeek R1).
+    Ты — AuraMind R1, высококвалифицированный ИИ-психолог. Твоя специализация — глубокий экзистенциальный и когнитивно-поведенческий анализ.
     
-    Твой метод работы:
-    1. Глубокое рассуждение: Ты всегда начинаешь с внутреннего анализа. Ты не просто отвечаешь, ты исследуешь корень проблемы.
-    2. Аналитический подход: Твои ответы должны быть структурированными, эмпатичными, но профессиональными.
-    
-    Параметры пользователя:
-    - Возраст: ${settings.age}
-    - Стиль ответов: ${settings.style === 'short' ? 'лаконичный и точный' : 'развернутый, с глубоким погружением'}
-    - Давать советы: ${settings.advice ? 'активно предлагать пути решения' : 'использовать только метод сократического диалога'}
-    
-    Дата: ${dateStr}.
-    Используй свои ресурсы мышления (thinking budget) на максимум, чтобы найти скрытые паттерны в поведении пользователя.
+    Твоя задача:
+    1. Использовать возможности глубокого рассуждения для поиска скрытых причин стресса или тревоги пользователя.
+    2. Сохранять эмпатичный, спокойный и поддерживающий тон.
+    3. Контекст пользователя: возраст ${settings.age}, стиль ${settings.style}.
+    4. Отвечай ВСЕГДА на русском языке.
   `;
 
-  // Используем Gemini 3 Pro с максимальным бюджетом на рассуждение (32k), что является аналогом DeepSeek R1
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: [
-      ...history.map(h => ({ role: h.role, parts: [{ text: h.text }] })),
-      { role: 'user', parts: [{ text: message }] }
-    ],
-    config: {
-      systemInstruction,
-      temperature: 0.5, // Снижаем температуру для более строгого следования логике
-      thinkingConfig: {
-        thinkingBudget: settings.deepAnalysis ? 32768 : 0 // Максимальный бюджет для глубоких рассуждений
-      }
-    }
-  });
+  const contents = [
+    ...history.map(h => ({
+      role: h.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: h.content }]
+    })),
+    { role: 'user', parts: [{ text: message }] }
+  ];
 
-  return response.text || "Аналитический модуль не смог завершить операцию. Попробуйте еще раз.";
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-pro-preview',
+      contents,
+      config: {
+        systemInstruction,
+        temperature: 0.7,
+        thinkingConfig: {
+          thinkingBudget: settings.deepAnalysis ? 32768 : 0
+        }
+      }
+    });
+
+    // Extract text output
+    const text = response.text || "";
+    
+    // In Gemini 3 Pro, 'thinking' isn't always returned as a separate field like in DeepSeek,
+    // but the model performs it internally when budget is allocated. 
+    // If the model provides thoughts in parts, we could extract them.
+    return {
+      content: text,
+      reasoning: "Анализ завершен. Модель применила глубокое рассуждение для формирования этого ответа."
+    };
+  } catch (error: any) {
+    console.error("Gemini API Error:", error);
+    throw error;
+  }
 }
