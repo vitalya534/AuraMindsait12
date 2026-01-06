@@ -4,13 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AuraMind R1 - Powered by DeepSeek</title>
+  <title>AuraMind R1 - DeepSeek Psychology</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    // Shim for process.env to prevent ReferenceError in browser
+    window.process = { env: { API_KEY: "" } };
+  </script>
   <style>
-    :root {
-      color-scheme: dark;
-    }
+    :root { color-scheme: dark; }
     body {
       font-family: 'Inter', sans-serif;
       margin: 0;
@@ -18,35 +20,18 @@
       background: #0d1117;
       color: #e6edf3;
     }
-    .mono {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    details summary::-webkit-details-marker {
-      display:none;
-    }
-    /* Simple scrollbar */
-    ::-webkit-scrollbar {
-      width: 5px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0d1117;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #30363d;
-      border-radius: 10px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #484f58;
-    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    details summary::-webkit-details-marker { display:none; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #0d1117; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
     @keyframes loading {
       0% { transform: translateX(-100%); }
       100% { transform: translateX(300%); }
     }
-    .animate-loading {
-      animation: loading 2s infinite linear;
-    }
+    .animate-loading { animation: loading 2s infinite linear; }
   </style>
-<script type="importmap">
+  <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@19.0.0",

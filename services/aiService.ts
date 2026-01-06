@@ -1,31 +1,34 @@
 
-import { UserSettings } from "../types";
+import { UserSettings } from "../types.ts";
 
 export async function generateDeepSeekResponse(
   message: string, 
   history: { role: 'user' | 'assistant', content: string }[],
   settings: UserSettings
 ) {
-  const API_KEY = process.env.API_KEY;
+  // Use window.process shim if normal process isn't available
+  const env = (window as any).process?.env || {};
+  const API_KEY = env.API_KEY || (typeof process !== 'undefined' ? process.env.API_KEY : "");
+
   if (!API_KEY) {
-    throw new Error("API_KEY is not configured in environment variables.");
+    throw new Error("API_KEY не настроен. Добавьте его в системные переменные.");
   }
 
   const ENDPOINT = "https://api.deepseek.com/chat/completions";
 
   const systemPrompt = `
-    You are AuraMind, a professional AI psychologist powered by DeepSeek-R1.
-    Your goal is to provide deep, analytical, and empathetic psychological support.
+    Ты AuraMind, профессиональный психолог на базе DeepSeek-R1.
+    Твоя цель — глубокий аналитический и эмпатичный разбор ситуаций.
     
-    User Context:
-    - Age: ${settings.age}
-    - Style: ${settings.style === 'short' ? 'Concise' : 'Detailed & Exploratory'}
-    - Advice: ${settings.advice ? 'Active' : 'Socratic Method Only'}
+    Контекст пользователя:
+    - Возраст: ${settings.age}
+    - Стиль: ${settings.style === 'short' ? 'Лаконичный' : 'Подробный и исследовательский'}
+    - Советы: ${settings.advice ? 'Активно предлагать решения' : 'Только сократический диалог'}
     
-    Instructions:
-    1. Use your reasoning capabilities to analyze the user's underlying emotions.
-    2. Be supportive and maintain professional boundaries.
-    3. You MUST respond in Russian.
+    Инструкции:
+    1. Используй свои способности к рассуждению (reasoning) для анализа подтекста.
+    2. Будь поддерживающим, но профессиональным.
+    3. Отвечай ТОЛЬКО на русском языке.
   `;
 
   const messages = [
@@ -39,8 +42,7 @@ export async function generateDeepSeekResponse(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
-        'Accept': 'application/json'
+        'Authorization': `Bearer ${API_KEY}`
       },
       body: JSON.stringify({
         model: "deepseek-reasoner",
@@ -52,7 +54,7 @@ export async function generateDeepSeekResponse(
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
+      throw new Error(errorData.error?.message || `Ошибка API: ${response.status}`);
     }
 
     const data = await response.json();
@@ -60,10 +62,10 @@ export async function generateDeepSeekResponse(
 
     return {
       content: choice.content,
-      reasoning: choice.reasoning_content // This is the deep thinking from R1
+      reasoning: choice.reasoning_content
     };
   } catch (error: any) {
-    console.error("DeepSeek Service Error:", error);
+    console.error("DeepSeek API Error:", error);
     throw error;
   }
 }

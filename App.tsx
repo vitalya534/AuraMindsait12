@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { ChatInterface } from './components/ChatInterface';
-import { SettingsModal } from './components/SettingsModal';
-import { PremiumModal } from './components/PremiumModal';
-import { UserSettings, AgeRange, ResponseStyle, Gender, PremiumState } from './types';
+import { ChatInterface } from './components/ChatInterface.tsx';
+import { SettingsModal } from './components/SettingsModal.tsx';
+import { PremiumModal } from './components/PremiumModal.tsx';
+import { UserSettings, AgeRange, ResponseStyle, Gender, PremiumState } from './types.ts';
 
 const App: React.FC = () => {
   const [settings, setSettings] = useState<UserSettings>({
@@ -25,7 +25,6 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0d1117] text-gray-100 flex flex-col items-center justify-center p-2 md:p-6">
-      {/* DeepSeek Branding Header */}
       <div className="w-full max-w-5xl flex justify-between items-center mb-6 px-4">
         <div className="flex items-center space-x-4">
           <div className="w-10 h-10 bg-cyan-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.4)]">
@@ -49,20 +48,18 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Interface Container */}
       <div className="w-full max-w-5xl bg-[#0d1117] border border-white/5 rounded-[2rem] shadow-2xl flex flex-col h-[85vh] overflow-hidden">
         <ChatInterface settings={settings} />
       </div>
 
-      {/* Footer Info */}
       <div className="mt-4 flex items-center space-x-6">
         <div className="flex items-center space-x-2">
           <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-          <span className="text-[10px] mono text-gray-500 uppercase">Latency: 240ms</span>
+          <span className="text-[10px] mono text-gray-500 uppercase tracking-tighter">System Status: Active</span>
         </div>
         <div className="flex items-center space-x-2">
           <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></div>
-          <span className="text-[10px] mono text-gray-500 uppercase">Model: deepseek-reasoner</span>
+          <span className="text-[10px] mono text-gray-500 uppercase tracking-tighter">Model: DeepSeek-R1-Reasoner</span>
         </div>
       </div>
 
