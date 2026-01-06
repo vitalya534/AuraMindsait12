@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { UserSettings, AgeRange, ResponseStyle, Gender } from '../types';
+import { UserSettings, AgeRange, ResponseStyle, Gender } from '../types.ts';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -63,7 +63,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
               <select
                 value={settings.age}
                 onChange={(e) => updateSetting('age', e.target.value as AgeRange)}
-                className="w-full bg-gray-50 border-gray-100 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-500 appearance-none shadow-inner"
+                className="w-full bg-gray-50 border-gray-100 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-500 appearance-none shadow-inner text-gray-900"
               >
                 <option value={AgeRange.TEEN}>Подросток</option>
                 <option value={AgeRange.ADULT}>Взрослый</option>
@@ -74,7 +74,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
               <select
                 value={settings.style}
                 onChange={(e) => updateSetting('style', e.target.value as ResponseStyle)}
-                className="w-full bg-gray-50 border-gray-100 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-500 appearance-none shadow-inner"
+                className="w-full bg-gray-50 border-gray-100 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-500 appearance-none shadow-inner text-gray-900"
               >
                 <option value={ResponseStyle.SHORT}>Краткий</option>
                 <option value={ResponseStyle.LONG}>Глубокий</option>

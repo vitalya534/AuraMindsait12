@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { PremiumState } from '../types';
+import { PremiumState } from '../types.ts';
 
 interface PremiumModalProps {
   isOpen: boolean;
@@ -16,8 +16,6 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, pre
   if (!isOpen) return null;
 
   const handleActivate = () => {
-    // In a real app, this would check against a backend.
-    // Here we'll simulate a key verification.
     if (inputKey.length >= 8) {
       setPremium({ isPremium: true, key: inputKey });
       onClose();
@@ -74,7 +72,7 @@ export const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, pre
                 setInputKey(e.target.value);
                 setError('');
               }}
-              className="w-full bg-white/10 border border-white/20 rounded-2xl py-3 px-4 text-center focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
+              className="w-full bg-white/10 border border-white/20 rounded-2xl py-3 px-4 text-center focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all text-white placeholder:text-white/30"
             />
             {error && <p className="text-red-400 text-xs text-center">{error}</p>}
             <button
